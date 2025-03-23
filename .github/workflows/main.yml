@@ -1,0 +1,46 @@
+name: CI-CD
+on:
+  push:
+    branches: ["master"]
+  workflow_dispatch:
+
+jobs:
+  CI:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4.2.2
+      - name: Docker Login
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Build and Push
+        uses: docker/build-push-action@v6
+        with:
+          context: ./src
+          push: true
+          file: ./src/Dockerfile
+          tags: |
+            mauriciodeandraderamos/pipeline-fake-shop-mauricio:v${{ github.run_number }}
+            mauriciodeandraderamos/pipeline-fake-shop-mauricio:latest
+  CD:
+    needs: [CI]
+    runs-on: ubuntu-latest
+    steps:  
+      - name: Checkout
+        uses: actions/checkout@v4.2.2   
+      - name: Set Kubeconfig
+        uses: azure/k8s-set-context@v4
+        with:
+         method: kubeconfig
+         kubeconfig: ${{ secrets.K8S_KUBECONFIG }} 
+      - name: Deploy to K8s Cluster
+        uses: Azure/k8s-deploy@v5
+        with:
+         manifests: k8s/deplyment-fakeshop_digitalocean.yml
+         images: mauriciodeandraderamos/pipeline-fake-shop-mauricio:v${{ github.run_number }}
+
+      
+    
+  
