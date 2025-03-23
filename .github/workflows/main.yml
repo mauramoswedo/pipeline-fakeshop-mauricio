@@ -36,7 +36,7 @@ jobs:
          kubeconfig: ${{ secrets.K8S_KUBECONFIG }} 
       - uses: Azure/k8s-deploy@v5
         with:
-         manifests: deplyment-fakeshop_digitalocean.yml
+         manifests: src/k8s/deplyment-fakeshop_digitalocean.yml
          images: |
            mauriciodeandraderamos/pipeline-fake-shop-mauricio:v${{ github.run_number }}
 
