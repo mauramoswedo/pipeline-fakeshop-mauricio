@@ -50,7 +50,7 @@ spec:
     spec:
       containers:
         - name: fakeshop
-          image: mauriciodeandraderamos/fake-shop-mauricio:latest
+          image: mauriciodeandraderamos/pipeline-fake-shop-mauricio:latest
           ports:
             - containerPort: 5000
           env:
